@@ -1,223 +1,54 @@
-# kozin-develop
-
-React Native Expo (SDK 54) + TypeScript プロジェクト
-
-## 技術スタック
-
-| パッケージ | バージョン |
-|---|---|
-| Expo SDK | 54 |
-| React | 19.1.0 |
-| React Native | 0.81.5 |
-| TypeScript | 5.9.x |
-
-## セットアップ
-
-```bash
-# 依存パッケージのインストール
-npm install
-```
-
-## 開発サーバー
-
-```bash
-# 開発サーバー起動（Expo DevTools）
-npx expo start
-
-# キャッシュクリアして起動
-npx expo start -c
-
-# プラットフォーム指定で起動
-npx expo start --ios       # iOSシミュレーター
-npx expo start --android   # Androidエミュレーター
-npx expo start --web       # ブラウザ
-
-# Expo Go で起動
-npx expo start --go
-
-# カスタムDev Client で起動
-npx expo start --dev-client
-
-# ホスト設定
-npx expo start --tunnel     # ngrokトンネル経由（外部ネットワーク接続）
-npx expo start --lan        # ローカルネットワーク（デフォルト）
-npx expo start --localhost   # localhost接続
-
-# ポート指定
-npx expo start --port 3000
-```
-
-## npm scripts
-
-```bash
-npm start        # npx expo start
-npm run ios      # npx expo start --ios
-npm run android  # npx expo start --android
-npm run web      # npx expo start --web
-```
-
-## パッケージ管理
-
-```bash
-# Expo互換バージョンでパッケージをインストール
-npx expo install <パッケージ名>
-
-# 例
-npx expo install expo-camera expo-location
-
-# devDependencies としてインストール
-npx expo install <パッケージ名> --dev
-
-# インストール済みパッケージの互換性チェック
-npx expo install --check
-
-# 互換性のないバージョンを自動修正
-npx expo install --fix
-```
-
-## ネイティブビルド
-
-```bash
-# ネイティブプロジェクトファイルの生成（prebuild）
-npx expo prebuild
-
-# プラットフォーム指定
-npx expo prebuild --platform ios
-npx expo prebuild --platform android
-
-# ネイティブフォルダをクリーンしてから再生成
-npx expo prebuild --clean
-
-# iOSネイティブビルド実行
-npx expo run:ios
-
-# Androidネイティブビルド実行
-npx expo run:android
-```
-
-## エクスポート（本番ビルド）
-
-```bash
-# 静的ファイルをエクスポート（dist/ に出力）
-npx expo export
-
-# プラットフォーム指定
-npx expo export --platform web
-npx expo export --platform ios
-npx expo export --platform android
-
-# 出力先ディレクトリ指定
-npx expo export --output-dir build
-
-# ソースマップ付きでエクスポート
-npx expo export --source-maps
-
-# キャッシュクリアしてエクスポート
-npx expo export --clear
-```
-
-## EAS (Expo Application Services)
-
-```bash
-# EAS CLIのインストール
-npm install -g eas-cli
-
-# Expoアカウントにログイン
-eas login
-
-# EASビルド設定の初期化
-eas build:configure
-
-# 開発ビルド
-eas build --profile development --platform ios
-eas build --profile development --platform android
-
-# プレビュービルド
-eas build --profile preview --platform all
-
-# 本番ビルド
-eas build --profile production --platform ios
-eas build --profile production --platform android
-
-# App Store / Google Play へ提出
-eas submit --platform ios
-eas submit --platform android
-
-# OTAアップデート配信
-eas update --branch production --message "バグ修正"
-```
-
-## Expoアカウント管理
-
-```bash
-npx expo login       # ログイン
-npx expo logout      # ログアウト
-npx expo whoami      # ログイン中のユーザー確認
-npx expo register    # アカウント新規登録
-```
-
-## 設定確認
-
-```bash
-# Expoプロジェクト設定を表示
-npx expo config
-
-# テンプレートファイルのカスタマイズ
-npx expo customize
-```
-
-## よく使うライブラリのインストール例
-
-```bash
-# ナビゲーション
-npx expo install @react-navigation/native @react-navigation/native-stack react-native-screens react-native-safe-area-context
-
-# 画像ピッカー
-npx expo install expo-image-picker
-
-# カメラ
-npx expo install expo-camera
-
-# 位置情報
-npx expo install expo-location
-
-# ローカルストレージ
-npx expo install @react-native-async-storage/async-storage
-
-# フォント
-npx expo install expo-font
-
-# アイコン
-npx expo install @expo/vector-icons
-
-# 線形グラデーション
-npx expo install expo-linear-gradient
-
-# Haptics（触覚フィードバック）
-npx expo install expo-haptics
-
-# Notifications（通知）
-npx expo install expo-notifications
-
-# Splash Screen
-npx expo install expo-splash-screen
-```
-
-## トラブルシューティング
-
-```bash
-# Metro Bundler のキャッシュクリア
-npx expo start -c
-
-# node_modules 再インストール
-rm -rf node_modules && npm install
-
-# iOS の Pod 再インストール（prebuild 後）
-cd ios && pod install --repo-update && cd ..
-
-# Watchman のキャッシュクリア
-watchman watch-del-all
-
-# Expo の設定診断
-npx expo-doctor
-```
+【最終要件定義書 ver.Final】
+1. アプリ概要
+アプリ名（案）: PlanLike, GoLike, LikeTrip
+コンセプト: 「みんなの『好き』を、AIがひとつの物語（プラン）にする。」
+コア体験: 友人や恋人と「ここ良くない？」と感じた瞬間のスクリーンショットを、グループ専用の「広場」に投げ合う。AIがそれらの画像から「みんなの今の気分」を読み取り、特別な名前のついた複数のルートプランを提案する。
+ターゲットユーザー: 高校生、大学生、20代。タイムパフォーマンスを重視しつつ、「自分たちらしさ」を求める層。
+2. 機能要件
+2.1. ユーザー認証・グループ基盤
+認証: Supabase Authを利用したメールアドレス/パスワードによるアカウント作成・ログイン機能。
+プロフィール: ユーザー名とアバター画像を設定できる。
+広場（グループ）機能:
+ユーザーは目的別（例：「今週末の渋谷」「卒業旅行」）に複数の「広場」を作成・管理できる。
+広場の作成者は、他のユーザーをアカウント名で検索して招待できる。
+招待された側は承認・拒否を選択でき、承認するとメンバーになる。
+2.2. 「LIKE」投稿機能
+入力方法: スマートフォンのフォトライブラリからスクリーンショット画像をアップロードする。
+理由: URLをコピー＆ペーストする手間を省き、ユーザーの日常的な行動（スクショ）をそのままアプリ体験に繋げるため。
+表示: 投稿された画像は「広場」のタイムラインに一覧表示され、誰がどの画像を投稿したかが直感的にわかる。
+リアクション: 各画像に対して、簡単なリアクション（例: 👍）を付けられる。
+2.3. AIプランニング機能
+画像解析: AI (Gemini Vision) がアップロードされた複数の画像から、テキスト情報、ランドマーク、場所の雰囲気（例: エモい、賑やか、静か）を抽出する。
+プラン生成: 抽出した情報と、ユーザーが任意で入力する追加要望（予算、時間、食べたいもの等）を統合し、コンセプトの異なる3つのルートプランを生成する。
+プラン・ネーミング: AIが各プランにキャッチーな名前を付与する。（例: 「100%映える。最先端トレンド追求コース」「予算3000円！節約しつつ満足チルコース」）
+2.4. 共有・決定機能
+プラン選択: AIが提案した3つのプランの中から、グループで話し合い、実行するプランを1つ選択する。
+共有リンク: 決定したプランの詳細を確認できる専用ページのURLを発行し、LINE等の外部アプリで共有可能にする。
+3. 技術要件
+3.1. 全体アーキテクチャ
+フロントエンド: React Native (Expo)
+バックエンド: Supabase (Database, Auth, Storage)
+AIオーケストレーション: Dify Cloud
+LLM: Google Gemini (1.5 Pro / Flash) - Vision機能活用
+3.2. データベース (Supabase/PostgreSQL)
+設計: profiles, hirobas, hiroba_members (中間テーブル), posts, plans の5つのテーブルで構成。ユーザーと広場の「多対多」の関係を中間テーブルで適切に管理する。
+型定義: Supabase CLIを用いてDBスキーマからTypeScriptの型を自動生成し、これを「信頼できる唯一の情報源」としてアプリ全体で利用する。
+3.3. フロントエンドアーキテクチャ (React Native)
+状態管理:
+サーバー状態: TanStack Query (React Query) に一任する。APIからのデータ取得、キャッシュ、重複リクエスト防止を自動化し、useState + useEffect による手動でのデータ取得は原則禁止する。
+クライアント状態: フォーム入力値やモーダルの開閉など、UI起因の状態管理には useState を使用する。
+グローバル状態: 認証情報など、アプリ全体で共有するクライアント状態は React Context で管理する。
+ディレクトリ構成: src ディレクトリ配下に api, components, hooks, screens, types などを機能的に配置し、コードの可読性と保守性を高める。
+4. 開発ロードマップ（優先順位）
+Phase 1 (MVP):
+ユーザー認証機能。
+単一の広場内で、画像を1枚アップロードできる。
+アップロードされた1枚の画像情報を含む、「名前付きプラン」が1つ生成・表示される。
+目標: アプリの最もコアな価値である「画像からプランが生成される」体験を最速で実現する。
+Phase 2:
+複数ユーザーが参加できるグループ（広場）機能の実装。
+複数の画像から情報を統合してプランを生成するロジックの実装。
+Phase 3:
+AIが3案のプランを提示する機能。
+プラン選択・共有機能の実装。
+UI/UXの全体的なブラッシュアップ。
