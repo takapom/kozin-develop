@@ -9,14 +9,33 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
+import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
 import { colors, fonts, radii, shadows, spacing } from '../theme/tokens';
+import { glass } from '../theme/glass';
+import { GlassCard } from '../components/ui/GlassCard';
 import { AppTabBar, TabKey } from '../components/ui/AppTabBar';
 import { useAuth } from '../contexts/AuthContext';
 import { useMyHirobas } from '../hooks/useMyHirobas';
 import { relativeTime } from '../utils/relativeTime';
 
 const DOT_COLORS = ['#F9B7C7', '#B7B9FF', '#B7E8D0', '#FFE8B5', '#DDE8FF'];
+
+const DOT_ICONS: React.ComponentProps<typeof Ionicons>['name'][] = [
+  'compass-outline',
+  'heart-outline',
+  'sparkles',
+  'planet-outline',
+  'rocket-outline',
+];
+
+/** DOT_COLOR の hex を opacity 0.15 の rgba に変換する */
+function toShadowColor(hex: string): string {
+  const r = parseInt(hex.slice(1, 3), 16);
+  const g = parseInt(hex.slice(3, 5), 16);
+  const b = parseInt(hex.slice(5, 7), 16);
+  return `rgba(${r}, ${g}, ${b}, 0.15)`;
+}
 
 type HomeScreenProps = {
   onSelectHiroba?: (id: string) => void;
@@ -37,7 +56,7 @@ export function HomeScreen({ onSelectHiroba, onOpenSettings }: HomeScreenProps) 
         >
           <View style={styles.headerRow}>
             <View>
-              <Text style={styles.greeting}>おはよう ☀️</Text>
+              <Text style={styles.greeting}>おはよう</Text>
               <Text style={styles.name}>{profile?.username ?? 'ゲスト'}</Text>
             </View>
             <LinearGradient
@@ -58,13 +77,13 @@ export function HomeScreen({ onSelectHiroba, onOpenSettings }: HomeScreenProps) 
               style={styles.ctaGradient}
             >
               <View style={styles.ctaIconWrap}>
-                <Text style={styles.ctaIcon}>✨</Text>
+                <Ionicons name="add" size={20} color={colors.white} />
               </View>
               <View style={styles.ctaTextWrap}>
                 <Text style={styles.ctaTitle}>新しい広場をつくる</Text>
                 <Text style={styles.ctaSubtitle}>友達と「好き」を集めよう</Text>
               </View>
-              <Text style={styles.ctaArrow}>→</Text>
+              <Ionicons name="arrow-forward" size={18} color={colors.white} />
             </LinearGradient>
           </Pressable>
 
@@ -80,43 +99,108 @@ export function HomeScreen({ onSelectHiroba, onOpenSettings }: HomeScreenProps) 
               style={{ marginTop: spacing.xl }}
             />
           ) : !hirobas || hirobas.length === 0 ? (
-            <View style={styles.emptyState}>
-              <Text style={styles.emptyText}>広場がまだありません</Text>
+            /* ── 空状態 ── */
+            <GlassCard style={styles.emptyCard}>
+              <Ionicons
+                name="compass-outline"
+                size={44}
+                color={colors.accent}
+              />
+              <Text style={styles.emptyTitle}>みんなの広場をつくろう</Text>
               <Text style={styles.emptySubtext}>
-                上のボタンから新しい広場をつくりましょう
+                スクショを集めてAIプランを作成
               </Text>
-            </View>
+            </GlassCard>
           ) : (
+            /* ── 広場カードリスト（レイヤード立体パターン） ── */
             hirobas.map((hiroba, index) => {
               const memberCount = hiroba.hiroba_members?.[0]?.count ?? 0;
               const postCount = hiroba.posts?.[0]?.count ?? 0;
               const dotColor = DOT_COLORS[index % DOT_COLORS.length];
+              const dotIcon = DOT_ICONS[index % DOT_ICONS.length];
 
               return (
                 <Pressable
                   key={hiroba.id}
-                  style={styles.hirobaCard}
                   onPress={() => onSelectHiroba?.(hiroba.id)}
+                  style={({ pressed }) => [
+                    styles.cardWrapper,
+                    pressed && styles.cardPressed,
+                  ]}
                 >
+                  {/* 背面シャドウレイヤー */}
                   <View
-                    style={[styles.hirobaDot, { backgroundColor: dotColor }]}
+                    style={[
+                      styles.shadowLayer,
+                      {
+                        backgroundColor: toShadowColor(dotColor),
+                        borderRadius: glass.borderRadius.lg,
+                      },
+                    ]}
                   />
-                  <View style={styles.hirobaInfo}>
-                    <View style={styles.hirobaHeaderRow}>
-                      <Text style={styles.hirobaTitle}>{hiroba.title}</Text>
-                      <Text style={styles.hirobaTime}>
+
+                  {/* メインカード */}
+                  <GlassCard style={styles.mainCard}>
+                    {/* カラードット + アイコン */}
+                    <View
+                      style={[styles.dotIcon, { backgroundColor: dotColor }]}
+                    >
+                      <Ionicons name={dotIcon} size={22} color={colors.white} />
+                    </View>
+
+                    {/* タイトル */}
+                    <Text style={styles.hirobaTitle}>{hiroba.title}</Text>
+
+                    {/* 自然言語メタ情報 */}
+                    <Text style={styles.hirobaMetaText}>
+                      {memberCount}人が参加中 ・ {postCount}枚の写真
+                    </Text>
+
+                    {/* メンバーミニセクション */}
+                    <View style={styles.miniSection}>
+                      <View style={styles.avatarRow}>
+                        {Array.from(
+                          { length: Math.min(memberCount, 3) },
+                          (_, i) => (
+                            <View
+                              key={i}
+                              style={[
+                                styles.memberAvatar,
+                                {
+                                  backgroundColor:
+                                    DOT_COLORS[i % DOT_COLORS.length],
+                                  marginLeft: i === 0 ? 0 : -8,
+                                  zIndex: 3 - i,
+                                },
+                              ]}
+                            >
+                              <Ionicons
+                                name="person"
+                                size={12}
+                                color={colors.white}
+                              />
+                            </View>
+                          ),
+                        )}
+                        {memberCount > 3 && (
+                          <View
+                            style={[
+                              styles.memberAvatar,
+                              styles.memberBadge,
+                              { marginLeft: -8, zIndex: 0 },
+                            ]}
+                          >
+                            <Text style={styles.badgeText}>
+                              +{memberCount - 3}
+                            </Text>
+                          </View>
+                        )}
+                      </View>
+                      <Text style={styles.timeText}>
                         {relativeTime(hiroba.updated_at)}
                       </Text>
                     </View>
-                    <View style={styles.hirobaMetaRow}>
-                      <Text style={styles.hirobaMeta}>
-                        👥 {memberCount}人
-                      </Text>
-                      <Text style={styles.hirobaMeta}>
-                        📸 {postCount}件
-                      </Text>
-                    </View>
-                  </View>
+                  </GlassCard>
                 </Pressable>
               );
             })
@@ -147,6 +231,8 @@ const styles = StyleSheet.create({
     paddingTop: spacing.lg,
     paddingBottom: spacing.xxl,
   },
+
+  /* ── Header ── */
   headerRow: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -174,6 +260,8 @@ const styles = StyleSheet.create({
   avatarIcon: {
     fontSize: 18,
   },
+
+  /* ── CTA ── */
   ctaCard: {
     borderRadius: radii.card,
     overflow: 'hidden',
@@ -195,9 +283,6 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginRight: spacing.md,
   },
-  ctaIcon: {
-    fontSize: 18,
-  },
   ctaTextWrap: {
     flex: 1,
   },
@@ -212,10 +297,8 @@ const styles = StyleSheet.create({
     fontFamily: fonts.body,
     color: 'rgba(255,255,255,0.9)',
   },
-  ctaArrow: {
-    fontSize: 18,
-    color: colors.white,
-  },
+
+  /* ── Section ── */
   sectionHeader: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -232,60 +315,100 @@ const styles = StyleSheet.create({
     fontFamily: fonts.heading,
     color: colors.accent,
   },
-  hirobaCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
+
+  /* ── レイヤード立体カード ── */
+  cardWrapper: {
+    marginBottom: spacing.md + 4,
+    position: 'relative',
+  },
+  cardPressed: {
+    opacity: 0.85,
+    transform: [{ scale: 0.98 }],
+  },
+  shadowLayer: {
+    position: 'absolute',
+    top: 6,
+    left: 4,
+    right: 4,
+    bottom: -6,
+  },
+  mainCard: {
     padding: spacing.md,
-    borderRadius: radii.card,
-    backgroundColor: colors.surface,
-    marginBottom: spacing.md,
-    ...shadows.soft,
   },
-  hirobaDot: {
-    width: 36,
-    height: 36,
-    borderRadius: 14,
-    marginRight: spacing.md,
-  },
-  hirobaInfo: {
-    flex: 1,
-  },
-  hirobaHeaderRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+
+  /* ── カラードット + アイコン ── */
+  dotIcon: {
+    width: 48,
+    height: 48,
+    borderRadius: 16,
     alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: spacing.sm,
   },
+
+  /* ── カード内コンテンツ ── */
   hirobaTitle: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamily: fonts.heading,
     color: colors.ink,
   },
-  hirobaTime: {
+  hirobaMetaText: {
+    fontSize: 13,
+    fontFamily: fonts.body,
+    color: colors.textSecondary,
+    marginTop: 4,
+  },
+
+  /* ── メンバーミニセクション ── */
+  miniSection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: 'rgba(0, 0, 0, 0.04)',
+    borderRadius: 12,
+    padding: 10,
+    marginTop: spacing.sm,
+  },
+  avatarRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  memberAvatar: {
+    width: 26,
+    height: 26,
+    borderRadius: 13,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: colors.white,
+  },
+  memberBadge: {
+    backgroundColor: colors.textMuted,
+  },
+  badgeText: {
+    fontSize: 10,
+    fontFamily: fonts.heading,
+    color: colors.white,
+  },
+  timeText: {
     fontSize: 11,
     fontFamily: fonts.body,
     color: colors.textMuted,
   },
-  hirobaMetaRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginTop: spacing.xs,
-  },
-  hirobaMeta: {
-    fontSize: 12,
-    fontFamily: fonts.body,
-    color: colors.textSecondary,
-  },
-  emptyState: {
+
+  /* ── 空状態 ── */
+  emptyCard: {
     alignItems: 'center',
-    paddingVertical: spacing.xl,
+    paddingVertical: 32,
   },
-  emptyText: {
-    fontSize: 14,
+  emptyTitle: {
+    fontSize: 16,
     fontFamily: fonts.heading,
-    color: colors.textSecondary,
+    color: colors.ink,
+    marginTop: spacing.sm,
   },
   emptySubtext: {
-    fontSize: 12,
+    fontSize: 13,
     fontFamily: fonts.body,
     color: colors.textMuted,
     marginTop: spacing.xs,
