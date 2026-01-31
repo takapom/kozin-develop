@@ -1,0 +1,1734 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PlanLike UI - Figma Export</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      min-height: 100vh;
+      padding: 40px;
+    }
+
+    h1 {
+      text-align: center;
+      font-size: 36px;
+      background: linear-gradient(135deg, #FF6B9D, #7C5CFF, #00D4AA);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      margin-bottom: 40px;
+    }
+
+    .screens-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 40px;
+      max-width: 1800px;
+      margin: 0 auto;
+    }
+
+    .screen-wrapper {
+      text-align: center;
+    }
+
+    .screen-label {
+      color: rgba(255, 255, 255, 0.8);
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 16px;
+    }
+
+    /* iPhone Frame Base */
+    .iphone-frame {
+      width: 393px;
+      height: 852px;
+      border-radius: 48px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 50px 100px rgba(0, 0, 0, 0.3);
+    }
+
+    .status-bar {
+      height: 54px;
+      padding: 14px 28px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .home-indicator {
+      width: 134px;
+      height: 5px;
+      background: #1A1D29;
+      border-radius: 3px;
+      position: absolute;
+      bottom: 8px;
+      left: 50%;
+      transform: translateX(-50%);
+      opacity: 0.2;
+    }
+
+    .home-indicator.light {
+      background: white;
+    }
+
+    /* Colors */
+    :root {
+      --primary: #FF6B9D;
+      --secondary: #7C5CFF;
+      --accent: #00D4AA;
+      --warning: #FFB347;
+      --background: #FAFBFF;
+      --surface: #FFFFFF;
+      --surface-alt: #F5F7FF;
+      --text: #1A1D29;
+      --text-secondary: #6B7280;
+      --text-muted: #9CA3AF;
+    }
+
+    /* ========== Screen 1: Splash ========== */
+    .splash-screen {
+      background: linear-gradient(135deg, #FF6B9D 0%, #FF8E72 50%, #FFB347 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .splash-screen .floating-shape {
+      position: absolute;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.1);
+    }
+
+    .splash-screen .floating-shape.one {
+      width: 300px;
+      height: 300px;
+      top: -100px;
+      right: -80px;
+    }
+
+    .splash-screen .floating-shape.two {
+      width: 200px;
+      height: 200px;
+      bottom: 100px;
+      left: -60px;
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .splash-screen .logo-box {
+      width: 120px;
+      height: 120px;
+      background: white;
+      border-radius: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.15);
+      margin-bottom: 32px;
+      font-size: 56px;
+    }
+
+    .splash-screen h1 {
+      font-size: 42px;
+      font-weight: 800;
+      color: white;
+      -webkit-text-fill-color: white;
+      background: none;
+      margin-bottom: 12px;
+      letter-spacing: -1px;
+    }
+
+    .splash-screen .tagline {
+      font-size: 17px;
+      color: rgba(255, 255, 255, 0.9);
+      text-align: center;
+      line-height: 1.5;
+      max-width: 260px;
+    }
+
+    .splash-screen .cta-btn {
+      position: absolute;
+      bottom: 100px;
+      background: white;
+      color: var(--primary);
+      border: none;
+      padding: 18px 64px;
+      border-radius: 9999px;
+      font-size: 17px;
+      font-weight: 700;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    }
+
+    /* ========== Screen 2: Auth ========== */
+    .auth-screen {
+      background: linear-gradient(180deg, #FAFBFF 0%, #F0F4FF 100%);
+    }
+
+    .auth-screen .content {
+      padding: 40px 24px 34px;
+    }
+
+    .auth-screen .header {
+      text-align: center;
+      margin-bottom: 48px;
+    }
+
+    .auth-screen .logo-icon {
+      width: 80px;
+      height: 80px;
+      background: linear-gradient(135deg, #FF6B9D 0%, #FF8E72 50%, #FFB347 100%);
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 24px;
+      font-size: 36px;
+      box-shadow: 0 0 40px rgba(255, 107, 157, 0.3);
+    }
+
+    .auth-screen h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      -webkit-text-fill-color: var(--text);
+      background: none;
+      margin-bottom: 8px;
+    }
+
+    .auth-screen .subtitle {
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+
+    .input-group {
+      background: white;
+      border-radius: 20px;
+      padding: 16px 20px;
+      box-shadow: 0 4px 20px rgba(124, 92, 255, 0.08);
+      margin-bottom: 16px;
+    }
+
+    .input-group label {
+      font-size: 12px;
+      color: var(--text-muted);
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 8px;
+    }
+
+    .input-group input {
+      width: 100%;
+      border: none;
+      font-size: 16px;
+      color: var(--text);
+      outline: none;
+    }
+
+    .primary-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #FF6B9D 0%, #FF8E72 50%, #FFB347 100%);
+      color: white;
+      border: none;
+      padding: 18px;
+      border-radius: 20px;
+      font-size: 17px;
+      font-weight: 700;
+      margin-top: 8px;
+      box-shadow: 0 0 40px rgba(255, 107, 157, 0.3);
+    }
+
+    .divider {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin: 24px 0;
+    }
+
+    .divider::before,
+    .divider::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: #E5E7EB;
+    }
+
+    .divider span {
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .apple-btn {
+      width: 100%;
+      background: white;
+      color: var(--text);
+      border: 2px solid #E5E7EB;
+      padding: 16px;
+      border-radius: 20px;
+      font-size: 15px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .auth-footer {
+      text-align: center;
+      margin-top: 32px;
+      font-size: 15px;
+      color: var(--text-secondary);
+    }
+
+    .auth-footer a {
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    /* ========== Screen 3: Home ========== */
+    .home-screen {
+      background: linear-gradient(180deg, #FAFBFF 0%, #F0F4FF 100%);
+    }
+
+    .home-screen .content {
+      padding: 20px 24px 100px;
+    }
+
+    .home-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 28px;
+    }
+
+    .home-header .greeting {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 4px;
+    }
+
+    .home-header h1 {
+      font-size: 28px;
+      font-weight: 700;
+      color: var(--text);
+      -webkit-text-fill-color: var(--text);
+      background: none;
+    }
+
+    .home-header .avatar {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF6B9D 0%, #FF8E72 50%, #FFB347 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      box-shadow: 0 4px 20px rgba(124, 92, 255, 0.08);
+    }
+
+    .quick-action {
+      background: linear-gradient(135deg, #7C5CFF 0%, #00D4AA 100%);
+      border-radius: 28px;
+      padding: 24px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 28px;
+      box-shadow: 0 8px 32px rgba(124, 92, 255, 0.12);
+      color: white;
+    }
+
+    .quick-action .icon-box {
+      width: 56px;
+      height: 56px;
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+    }
+
+    .quick-action h3 {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .quick-action p {
+      font-size: 13px;
+      opacity: 0.8;
+    }
+
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .section-header h2 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .section-header a {
+      font-size: 14px;
+      color: var(--primary);
+      font-weight: 600;
+      text-decoration: none;
+    }
+
+    .hiroba-card {
+      background: white;
+      border-radius: 28px;
+      padding: 20px;
+      box-shadow: 0 4px 20px rgba(124, 92, 255, 0.08);
+      margin-bottom: 12px;
+    }
+
+    .hiroba-card .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 12px;
+    }
+
+    .hiroba-card .icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hiroba-card .icon .dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+    }
+
+    .hiroba-card .time {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .hiroba-card h3 {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .hiroba-card .footer {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .hiroba-card .members {
+      display: flex;
+      align-items: center;
+    }
+
+    .hiroba-card .member-avatars {
+      display: flex;
+      margin-right: 8px;
+    }
+
+    .hiroba-card .member-avatars span {
+      margin-left: -8px;
+      font-size: 20px;
+      background: white;
+      border-radius: 50%;
+      padding: 2px;
+    }
+
+    .hiroba-card .member-avatars span:first-child {
+      margin-left: 0;
+    }
+
+    .hiroba-card .member-count {
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .hiroba-card .post-count {
+      background: var(--surface-alt);
+      padding: 6px 12px;
+      border-radius: 9999px;
+      font-size: 13px;
+      color: var(--text-secondary);
+    }
+
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      padding: 12px 40px 34px;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #F0F0F5;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .nav-item span.icon {
+      font-size: 24px;
+    }
+
+    .nav-item span.label {
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .nav-item.active span.label {
+      color: var(--primary);
+    }
+
+    .nav-item:not(.active) {
+      opacity: 0.5;
+    }
+
+    /* ========== Screen 4: Hiroba Detail ========== */
+    .hiroba-detail-screen {
+      background: linear-gradient(180deg, #FAFBFF 0%, #F0F4FF 100%);
+    }
+
+    .hiroba-detail-screen .content {
+      padding: 10px 24px 160px;
+    }
+
+    .nav-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .nav-btn {
+      background: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      box-shadow: 0 4px 20px rgba(124, 92, 255, 0.08);
+    }
+
+    .nav-header h1 {
+      flex: 1;
+      text-align: center;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--text);
+      -webkit-text-fill-color: var(--text);
+      background: none;
+    }
+
+    .members-bar {
+      background: white;
+      border-radius: 28px;
+      padding: 16px 20px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+      box-shadow: 0 4px 20px rgba(124, 92, 255, 0.08);
+    }
+
+    .members-bar .members {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .members-bar .member-avatars span {
+      margin-left: -10px;
+      font-size: 28px;
+      background: white;
+      border-radius: 50%;
+      padding: 2px;
+      border: 2px solid white;
+    }
+
+    .members-bar .member-avatars span:first-child {
+      margin-left: 0;
+    }
+
+    .members-bar .invite-btn {
+      background: var(--surface-alt);
+      border: none;
+      padding: 8px 14px;
+      border-radius: 9999px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--primary);
+    }
+
+    .posts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .post-card {
+      background: white;
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(124, 92, 255, 0.08);
+    }
+
+    .post-card .post-header {
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #F5F5F5;
+    }
+
+    .post-card .post-header .user-info {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .post-card .post-header .avatar {
+      font-size: 20px;
+      border-radius: 50%;
+      padding: 2px;
+    }
+
+    .post-card .post-header .username {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .post-card .post-header .time {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    .post-card .post-image {
+      height: 120px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 48px;
+    }
+
+    .post-card .post-footer {
+      padding: 12px;
+    }
+
+    .post-card .caption {
+      font-size: 13px;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .post-card .reactions {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .post-card .like-count {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .post-card .like-btn {
+      background: var(--surface-alt);
+      border: none;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      color: var(--primary);
+      font-weight: 600;
+    }
+
+    .floating-actions {
+      position: absolute;
+      bottom: 100px;
+      left: 24px;
+      right: 24px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .floating-actions .secondary-btn {
+      flex: 1;
+      background: white;
+      border: 2px solid var(--primary);
+      border-radius: 28px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary);
+    }
+
+    .floating-actions .primary-btn {
+      flex: 1;
+      background: linear-gradient(135deg, #FF6B9D 0%, #FF8E72 50%, #FFB347 100%);
+      border: none;
+      border-radius: 28px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+      box-shadow: 0 0 40px rgba(255, 107, 157, 0.3);
+    }
+
+    /* ========== Screen 5: Image Upload ========== */
+    .upload-screen {
+      background: #000;
+    }
+
+    .upload-screen .status-bar {
+      color: white;
+    }
+
+    .upload-screen .content {
+      padding: 10px 20px;
+    }
+
+    .upload-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .upload-header .cancel-btn {
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
+      color: white;
+      padding: 10px 16px;
+      border-radius: 9999px;
+      font-size: 15px;
+      font-weight: 600;
+    }
+
+    .upload-header h1 {
+      font-size: 17px;
+      font-weight: 700;
+      color: white;
+      -webkit-text-fill-color: white;
+      background: none;
+    }
+
+    .upload-header .add-btn {
+      background: var(--primary);
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 9999px;
+      font-size: 15px;
+      font-weight: 700;
+    }
+
+    .selected-preview {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 28px;
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+
+    .selected-preview .label {
+      color: rgba(255, 255, 255, 0.6);
+      font-size: 13px;
+      margin-bottom: 12px;
+    }
+
+    .selected-preview .images {
+      display: flex;
+      gap: 12px;
+    }
+
+    .selected-preview .thumb {
+      width: 80px;
+      height: 80px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      position: relative;
+    }
+
+    .selected-preview .thumb .badge {
+      position: absolute;
+      top: -6px;
+      right: -6px;
+      width: 24px;
+      height: 24px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .photo-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 4px;
+    }
+
+    .photo-grid .photo {
+      aspect-ratio: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      position: relative;
+    }
+
+    .photo-grid .photo .badge {
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      width: 24px;
+      height: 24px;
+      background: var(--primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    /* ========== Screen 6: Loading ========== */
+    .loading-screen {
+      background: linear-gradient(180deg, #FAFBFF 0%, #F0F4FF 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .loading-screen .orb {
+      width: 160px;
+      height: 160px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #FF6B9D 0%, #FF8E72 50%, #FFB347 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 40px;
+      box-shadow: 0 0 40px rgba(255, 107, 157, 0.3);
+      font-size: 64px;
+    }
+
+    .loading-screen h2 {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .loading-screen p {
+      font-size: 15px;
+      color: var(--text-secondary);
+      text-align: center;
+      max-width: 260px;
+      line-height: 1.6;
+    }
+
+    .loading-screen .dots {
+      display: flex;
+      gap: 8px;
+      margin-top: 40px;
+    }
+
+    .loading-screen .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--primary);
+      opacity: 0.3;
+    }
+
+    .loading-screen .dot.active {
+      opacity: 1;
+    }
+
+    /* ========== Screen 7: Plan Suggestions ========== */
+    .plans-screen {
+      background: linear-gradient(180deg, #FAFBFF 0%, #F0F4FF 100%);
+    }
+
+    .plans-screen .content {
+      padding: 10px 24px 120px;
+    }
+
+    .plans-header {
+      margin-bottom: 20px;
+    }
+
+    .plans-header .title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .plans-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--text);
+      -webkit-text-fill-color: var(--text);
+      background: none;
+    }
+
+    .plans-header p {
+      font-size: 14px;
+      color: var(--text-secondary);
+    }
+
+    .plan-card {
+      background: white;
+      border-radius: 28px;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(124, 92, 255, 0.08);
+      margin-bottom: 16px;
+      position: relative;
+    }
+
+    .plan-card.recommended {
+      border: 2px solid var(--primary);
+    }
+
+    .plan-card .recommend-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: var(--primary);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 11px;
+      font-weight: 700;
+      z-index: 1;
+    }
+
+    .plan-card .plan-header {
+      padding: 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .plan-card .plan-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 26px;
+      flex-shrink: 0;
+    }
+
+    .plan-card h3 {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+      line-height: 1.4;
+    }
+
+    .plan-card .meta {
+      display: flex;
+      gap: 12px;
+      font-size: 13px;
+      color: var(--text-muted);
+    }
+
+    .plan-card .expand-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      color: var(--text-muted);
+    }
+
+    .plan-card .edit-section {
+      border-top: 1px solid #F0F0F5;
+      padding: 16px;
+      background: var(--surface-alt);
+    }
+
+    .plan-card .edit-hint {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .plan-card .spots-section label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      display: block;
+      margin-bottom: 10px;
+    }
+
+    .plan-card .spot-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #E5E7EB;
+      margin-bottom: 8px;
+    }
+
+    .plan-card .spot-number {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+
+    .plan-card .spot-details {
+      flex: 1;
+    }
+
+    .plan-card .spot-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .plan-card .spot-time {
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      color: var(--text-secondary);
+    }
+
+    .plan-card .drag-handle {
+      color: var(--text-muted);
+      font-size: 16px;
+    }
+
+    .plan-card .add-spot-btn {
+      width: 100%;
+      margin-top: 8px;
+      padding: 12px;
+      background: white;
+      border: 2px dashed;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .plan-card .edit-fields {
+      display: flex;
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .plan-card .edit-field {
+      flex: 1;
+      padding: 12px;
+      background: white;
+      border-radius: 12px;
+      border: 1px solid #E5E7EB;
+    }
+
+    .plan-card .edit-field label {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 600;
+      margin-bottom: 4px;
+      text-transform: none;
+    }
+
+    .plan-card .edit-field .value {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .plan-card .ai-regen-btn {
+      width: 100%;
+      padding: 12px;
+      background: white;
+      border: 1px solid;
+      border-radius: 12px;
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .fixed-action {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      padding: 16px 24px 40px;
+      background: linear-gradient(0deg, white 70%, transparent 100%);
+    }
+
+    .fixed-action .primary-btn {
+      width: 100%;
+      background: linear-gradient(135deg, #FF6B9D 0%, #FF8E72 50%, #FFB347 100%);
+      border: none;
+      border-radius: 28px;
+      padding: 18px;
+      font-size: 17px;
+      font-weight: 700;
+      color: white;
+      box-shadow: 0 0 40px rgba(255, 107, 157, 0.3);
+    }
+
+    /* ========== Screen 8: Plan Detail ========== */
+    .plan-detail-screen {
+      background: linear-gradient(180deg, #FAFBFF 0%, #F0F4FF 100%);
+    }
+
+    .plan-detail-screen .content {
+      padding: 10px 24px 34px;
+    }
+
+    .plan-detail-header {
+      background: linear-gradient(135deg, #FF6B9D 0%, #FF8E72 50%, #FFB347 100%);
+      border-radius: 28px;
+      padding: 24px;
+      margin-bottom: 20px;
+      color: white;
+    }
+
+    .plan-detail-header .title-row {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+
+    .plan-detail-header h2 {
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 1.3;
+    }
+
+    .plan-detail-header .meta {
+      display: flex;
+      gap: 20px;
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .timeline {
+      position: relative;
+    }
+
+    .timeline-item {
+      display: flex;
+      gap: 16px;
+      margin-bottom: 24px;
+      position: relative;
+    }
+
+    .timeline-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .timeline-item .line {
+      position: absolute;
+      left: 23px;
+      top: 50px;
+      width: 2px;
+      height: calc(100% + 24px);
+      background: linear-gradient(180deg, var(--primary) 0%, var(--surface-alt) 100%);
+    }
+
+    .timeline-item .time-col {
+      width: 48px;
+      text-align: center;
+    }
+
+    .timeline-item .number {
+      width: 48px;
+      height: 48px;
+      background: linear-gradient(135deg, #FF6B9D 0%, #FF8E72 50%, #FFB347 100%);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 4px;
+      position: relative;
+      z-index: 1;
+    }
+
+    .timeline-item .time {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .timeline-item .content-card {
+      flex: 1;
+      background: white;
+      border-radius: 20px;
+      padding: 16px;
+      box-shadow: 0 4px 20px rgba(124, 92, 255, 0.08);
+    }
+
+    .timeline-item h3 {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .timeline-item .desc {
+      font-size: 14px;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+    }
+
+    .timeline-item .duration {
+      background: var(--surface-alt);
+      padding: 4px 10px;
+      border-radius: 9999px;
+      font-size: 12px;
+      color: var(--text-muted);
+      display: inline-block;
+    }
+
+    .share-buttons {
+      display: flex;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .share-buttons .line-btn {
+      flex: 1;
+      background: #06C755;
+      border: none;
+      border-radius: 28px;
+      padding: 16px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .share-buttons .link-btn {
+      width: 56px;
+      background: white;
+      border: 2px solid #E5E7EB;
+      border-radius: 28px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>PlanLike UI Design System</h1>
+
+  <div class="screens-grid">
+    <!-- Screen 1: Splash -->
+    <div class="screen-wrapper">
+      <div class="iphone-frame splash-screen">
+        <div class="floating-shape one"></div>
+        <div class="floating-shape two"></div>
+        <div class="logo-box">💫</div>
+        <h1>PlanLike</h1>
+        <p class="tagline">みんなの「好き」を、<br>AIがひとつの物語にする。</p>
+        <button class="cta-btn">はじめる ✨</button>
+        <div class="home-indicator light"></div>
+      </div>
+      <p class="screen-label">1. スプラッシュ</p>
+    </div>
+
+    <!-- Screen 2: Auth -->
+    <div class="screen-wrapper">
+      <div class="iphone-frame auth-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+        <div class="content">
+          <div class="header">
+            <div class="logo-icon">💫</div>
+            <h1>おかえりなさい！</h1>
+            <p class="subtitle">アカウントにログインしよう</p>
+          </div>
+          <div class="input-group">
+            <label>メールアドレス</label>
+            <input type="text" value="your@email.com">
+          </div>
+          <div class="input-group">
+            <label>パスワード</label>
+            <input type="password" value="••••••••">
+          </div>
+          <button class="primary-btn">ログイン</button>
+          <div class="divider"><span>または</span></div>
+          <button class="apple-btn">🍎 Appleでサインイン</button>
+          <p class="auth-footer">アカウントをお持ちでない方は <a href="#">新規登録</a></p>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+      <p class="screen-label">2. ログイン</p>
+    </div>
+
+    <!-- Screen 3: Home -->
+    <div class="screen-wrapper">
+      <div class="iphone-frame home-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+        <div class="content">
+          <div class="home-header">
+            <div>
+              <p class="greeting">おはよう ☀️</p>
+              <h1>たかぽん</h1>
+            </div>
+            <div class="avatar">👤</div>
+          </div>
+          <div class="quick-action">
+            <div class="icon-box">✨</div>
+            <div>
+              <h3>新しい広場をつくる</h3>
+              <p>友達と「好き」を集めよう</p>
+            </div>
+            <span style="margin-left:auto;font-size:20px;">→</span>
+          </div>
+          <div class="section-header">
+            <h2>あなたの広場</h2>
+            <a href="#">すべて見る</a>
+          </div>
+          <div class="hiroba-card">
+            <div class="card-header">
+              <div class="icon" style="background:linear-gradient(135deg,#FF6B9D20,#FF6B9D40);">
+                <div class="dot" style="background:#FF6B9D;"></div>
+              </div>
+              <span class="time">5分前</span>
+            </div>
+            <h3>今週末の渋谷🌃</h3>
+            <div class="footer">
+              <div class="members">
+                <div class="member-avatars"><span>👩</span><span>👨</span><span>🧑</span></div>
+                <span class="member-count">3人</span>
+              </div>
+              <span class="post-count">📸 12件</span>
+            </div>
+          </div>
+          <div class="hiroba-card">
+            <div class="card-header">
+              <div class="icon" style="background:linear-gradient(135deg,#7C5CFF20,#7C5CFF40);">
+                <div class="dot" style="background:#7C5CFF;"></div>
+              </div>
+              <span class="time">2時間前</span>
+            </div>
+            <h3>卒業旅行🎓✈️</h3>
+            <div class="footer">
+              <div class="members">
+                <div class="member-avatars"><span>👩</span><span>👨</span><span>🧑</span><span>👩‍🦰</span></div>
+                <span class="member-count">4人</span>
+              </div>
+              <span class="post-count">📸 28件</span>
+            </div>
+          </div>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item active"><span class="icon">🏠</span><span class="label">ホーム</span></div>
+          <div class="nav-item"><span class="icon">🔔</span><span class="label">通知</span></div>
+          <div class="nav-item"><span class="icon">⚙️</span><span class="label">設定</span></div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+      <p class="screen-label">3. ホーム</p>
+    </div>
+
+    <!-- Screen 4: Hiroba Detail -->
+    <div class="screen-wrapper">
+      <div class="iphone-frame hiroba-detail-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+        <div class="content">
+          <div class="nav-header">
+            <button class="nav-btn">←</button>
+            <h1>今週末の渋谷🌃</h1>
+            <button class="nav-btn">⋯</button>
+          </div>
+          <div class="members-bar">
+            <div class="members">
+              <div class="member-avatars"><span>👩</span><span>👨</span><span>🧑</span></div>
+              <span style="font-size:14px;color:#6B7280;">3人のメンバー</span>
+            </div>
+            <button class="invite-btn">+ 招待</button>
+          </div>
+          <div class="posts-grid">
+            <div class="post-card">
+              <div class="post-header">
+                <div class="user-info">
+                  <span class="avatar" style="background:linear-gradient(135deg,#FFE5EC,#FFF0E5);">👩</span>
+                  <span class="username">みさき</span>
+                </div>
+                <span class="time">5分前</span>
+              </div>
+              <div class="post-image" style="background:linear-gradient(135deg,#FFE5EC,#FFF0E5);">🍜</div>
+              <div class="post-footer">
+                <p class="caption">新しいラーメン屋！</p>
+                <div class="reactions">
+                  <span class="like-count">👍 2</span>
+                  <button class="like-btn">👍 いいね</button>
+                </div>
+              </div>
+            </div>
+            <div class="post-card">
+              <div class="post-header">
+                <div class="user-info">
+                  <span class="avatar" style="background:linear-gradient(135deg,#E5E8FF,#F5E5FF);">👨</span>
+                  <span class="username">けんた</span>
+                </div>
+                <span class="time">12分前</span>
+              </div>
+              <div class="post-image" style="background:linear-gradient(135deg,#E5E8FF,#F5E5FF);">🌸</div>
+              <div class="post-footer">
+                <p class="caption">夜桜スポット</p>
+                <div class="reactions">
+                  <span class="like-count">👍 3</span>
+                  <button class="like-btn">👍 いいね</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="floating-actions">
+          <button class="secondary-btn">📸 投稿する</button>
+          <button class="primary-btn">✨ プランを作る</button>
+        </div>
+        <div class="bottom-nav">
+          <div class="nav-item"><span class="icon">🏠</span><span class="label">ホーム</span></div>
+          <div class="nav-item"><span class="icon">🔔</span><span class="label">通知</span></div>
+          <div class="nav-item"><span class="icon">⚙️</span><span class="label">設定</span></div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+      <p class="screen-label">4. 広場詳細</p>
+    </div>
+
+    <!-- Screen 5: Image Upload -->
+    <div class="screen-wrapper">
+      <div class="iphone-frame upload-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+        <div class="content">
+          <div class="upload-header">
+            <button class="cancel-btn">キャンセル</button>
+            <h1>スクショを選ぶ</h1>
+            <button class="add-btn">追加</button>
+          </div>
+          <div class="selected-preview">
+            <p class="label">選択中 (2)</p>
+            <div class="images">
+              <div class="thumb" style="background:linear-gradient(135deg,#FFE5EC,#FFF0E5);">🍜<span
+                  class="badge">1</span></div>
+              <div class="thumb" style="background:linear-gradient(135deg,#E5E8FF,#F5E5FF);">☕<span
+                  class="badge">2</span></div>
+            </div>
+          </div>
+          <div class="photo-grid">
+            <div class="photo" style="background:linear-gradient(135deg,#FFE5EC,#FFF0E5);">🍜<span
+                class="badge">1</span></div>
+            <div class="photo" style="background:linear-gradient(135deg,#E5E8FF,#F5E5FF);">☕<span class="badge">2</span>
+            </div>
+            <div class="photo" style="background:linear-gradient(135deg,#E5FFF6,#E5F5FF);">🌸</div>
+            <div class="photo" style="background:linear-gradient(135deg,#FFF5E5,#FFE5F5);">🎮</div>
+            <div class="photo" style="background:linear-gradient(135deg,#FFE5EC,#FFF0E5);">🛍️</div>
+            <div class="photo" style="background:linear-gradient(135deg,#E5E8FF,#F5E5FF);">🍕</div>
+            <div class="photo" style="background:linear-gradient(135deg,#E5FFF6,#E5F5FF);">🎪</div>
+            <div class="photo" style="background:linear-gradient(135deg,#FFF5E5,#FFE5F5);">🎡</div>
+            <div class="photo" style="background:linear-gradient(135deg,#FFE5EC,#FFF0E5);">🏖️</div>
+          </div>
+        </div>
+        <div class="home-indicator light"></div>
+      </div>
+      <p class="screen-label">5. 画像投稿</p>
+    </div>
+
+    <!-- Screen 6: Loading -->
+    <div class="screen-wrapper">
+      <div class="iphone-frame loading-screen">
+        <div class="orb">✨</div>
+        <h2>AIがプランを考え中...</h2>
+        <p>みんなの「好き」を組み合わせて<br>最高のルートを見つけています</p>
+        <div class="dots">
+          <div class="dot active"></div>
+          <div class="dot"></div>
+          <div class="dot"></div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+      <p class="screen-label">6. プラン生成中</p>
+    </div>
+
+    <!-- Screen 7: Plan Suggestions -->
+    <div class="screen-wrapper">
+      <div class="iphone-frame plans-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+        <div class="content">
+          <div class="plans-header">
+            <div class="title-row">
+              <span style="font-size:28px;">✨</span>
+              <h1>3つのプランができました！</h1>
+            </div>
+            <p>タップして編集・カスタマイズできます</p>
+          </div>
+
+          <!-- Plan 1 - Expanded -->
+          <div class="plan-card recommended">
+            <span class="recommend-badge">おすすめ ⭐</span>
+            <div class="plan-header">
+              <div class="plan-icon" style="background:linear-gradient(135deg,#FF6B9D20,#FF6B9D40);">📸</div>
+              <div style="flex:1;">
+                <h3 style="padding-right:70px;">100%映える。最先端トレンド追求コース</h3>
+                <div class="meta">
+                  <span>🕐 約4時間</span>
+                  <span>💴 ¥4,500</span>
+                  <span>📍 3スポット</span>
+                </div>
+              </div>
+              <div class="expand-icon" style="transform:rotate(180deg);">▼</div>
+            </div>
+            <div class="edit-section">
+              <div class="edit-hint" style="background:#FF6B9D15;color:#FF6B9D;">
+                <span>✏️</span> 各項目をタップして編集できます
+              </div>
+              <div class="spots-section">
+                <label>スポット</label>
+                <div class="spot-item">
+                  <div class="spot-number" style="background:#FF6B9D;">1</div>
+                  <div class="spot-details">
+                    <div class="spot-name">原宿カフェ ✏️</div>
+                    <div class="spot-time"><span>🕐 14:00</span><span>⏱️ 60分</span></div>
+                  </div>
+                  <span class="drag-handle">⋮⋮</span>
+                </div>
+                <div class="spot-item">
+                  <div class="spot-number" style="background:#FF6B9D;">2</div>
+                  <div class="spot-details">
+                    <div class="spot-name">渋谷スクランブル ✏️</div>
+                    <div class="spot-time"><span>🕐 15:30</span><span>⏱️ 30分</span></div>
+                  </div>
+                  <span class="drag-handle">⋮⋮</span>
+                </div>
+                <button class="add-spot-btn" style="border-color:#FF6B9D40;color:#FF6B9D;">＋ スポットを追加</button>
+              </div>
+              <div class="edit-fields">
+                <div class="edit-field"><label>💴 予算</label>
+                  <div class="value">¥4,500</div>
+                </div>
+                <div class="edit-field"><label>🕐 所要時間</label>
+                  <div class="value">約4時間</div>
+                </div>
+              </div>
+              <button class="ai-regen-btn" style="border-color:#FF6B9D;color:#FF6B9D;">🤖 AIに再提案してもらう</button>
+            </div>
+          </div>
+
+          <!-- Plan 2 -->
+          <div class="plan-card">
+            <div class="plan-header">
+              <div class="plan-icon" style="background:linear-gradient(135deg,#00D4AA20,#00D4AA40);">💰</div>
+              <div style="flex:1;">
+                <h3>予算3000円！節約しつつ満足チルコース</h3>
+                <div class="meta">
+                  <span>🕐 約3時間</span>
+                  <span>💴 ¥2,800</span>
+                  <span>📍 3スポット</span>
+                </div>
+              </div>
+              <div class="expand-icon">▼</div>
+            </div>
+          </div>
+
+          <!-- Plan 3 -->
+          <div class="plan-card">
+            <div class="plan-header">
+              <div class="plan-icon" style="background:linear-gradient(135deg,#7C5CFF20,#7C5CFF40);">🍜</div>
+              <div style="flex:1;">
+                <h3>ガッツリ食べ歩き！グルメ満喫コース</h3>
+                <div class="meta">
+                  <span>🕐 約5時間</span>
+                  <span>💴 ¥6,000</span>
+                  <span>📍 3スポット</span>
+                </div>
+              </div>
+              <div class="expand-icon">▼</div>
+            </div>
+          </div>
+        </div>
+        <div class="fixed-action">
+          <button class="primary-btn">このプランを選ぶ ✨</button>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+      <p class="screen-label">7. プラン提案（編集可能）</p>
+    </div>
+
+    <!-- Screen 8: Plan Detail -->
+    <div class="screen-wrapper">
+      <div class="iphone-frame plan-detail-screen">
+        <div class="status-bar">
+          <span>9:41</span>
+          <span>📶 📡 🔋</span>
+        </div>
+        <div class="content">
+          <div class="nav-header">
+            <button class="nav-btn">←</button>
+            <h1 style="flex:1;text-align:center;font-size:18px;font-weight:700;">プラン詳細</h1>
+            <button class="nav-btn">↗</button>
+          </div>
+          <div class="plan-detail-header">
+            <div class="title-row">
+              <span style="font-size:32px;">📸</span>
+              <h2>100%映える。<br>最先端トレンド追求コース</h2>
+            </div>
+            <div class="meta">
+              <span>🕐 約4時間</span>
+              <span>💴 ¥4,500</span>
+              <span>📍 3スポット</span>
+            </div>
+          </div>
+          <div class="timeline">
+            <div class="timeline-item">
+              <div class="line"></div>
+              <div class="time-col">
+                <div class="number">1</div>
+                <span class="time">14:00</span>
+              </div>
+              <div class="content-card">
+                <h3>原宿カフェ ☕</h3>
+                <p class="desc">インスタ映え確実！韓国風カフェ</p>
+                <span class="duration">⏱️ 60分</span>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="line"></div>
+              <div class="time-col">
+                <div class="number">2</div>
+                <span class="time">15:30</span>
+              </div>
+              <div class="content-card">
+                <h3>渋谷スクランブル 🚶</h3>
+                <p class="desc">世界一有名な交差点で記念撮影</p>
+                <span class="duration">⏱️ 30分</span>
+              </div>
+            </div>
+            <div class="timeline-item">
+              <div class="time-col">
+                <div class="number">3</div>
+                <span class="time">16:30</span>
+              </div>
+              <div class="content-card">
+                <h3>ミヤシタパーク 🛍️</h3>
+                <p class="desc">ルーフトップでショッピング＆夕日</p>
+                <span class="duration">⏱️ 90分</span>
+              </div>
+            </div>
+          </div>
+          <div class="share-buttons">
+            <button class="line-btn">LINEでシェア 💬</button>
+            <button class="link-btn">🔗</button>
+          </div>
+        </div>
+        <div class="home-indicator"></div>
+      </div>
+      <p class="screen-label">8. プラン詳細</p>
+    </div>
+  </div>
+</body>
+
+</html>
