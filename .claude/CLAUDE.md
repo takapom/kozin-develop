@@ -66,43 +66,55 @@
 ・profiles テーブル (ユーザー情報)
 | カラム名         | データ型   | 説明         | 制約 / 備考                        |
 | :----------- | :----- | :--------- | :----------------------------- |
-| `id`         | `uuid` | ユーザーID     | **主キー**, `auth.users.id`への外部キー |
-| `username`   | `text` | ユーザー名      | **必須**, `UNIQUE`               |
-| `avatar_url` | `text` | アバター画像のURL | `NULL`許可                       |
+| `id`         | `uuid`        | ユーザーID     | **主キー**, `auth.users.id`への外部キー |
+| `username`   | `text`        | ユーザー名      | **必須**, `UNIQUE`               |
+| `avatar_url` | `text`        | アバター画像のURL | `NULL`許可                       |
+| `created_at` | `timestamptz` | 作成日時       | デフォルト `now()`                  |
+| `updated_at` | `timestamptz` | 更新日時       | デフォルト `now()`, トリガーで自動更新      |
 
 ・hirobas テーブル (広場)
 | カラム名          | データ型   | 説明       | 制約 / 備考             |
 | :------------ | :----- | :------- | :------------------ |
-| `id`          | `uuid` | 広場ID     | **主キー**             |
-| `owner_id`    | `uuid` | 広場の作成者ID | `profiles.id`への外部キー |
-| `name`        | `text` | 広場の名前    | **必須**              |
-| `description` | `text` | 広場の説明    | `NULL`許可            |
+| `id`          | `uuid`        | 広場ID     | **主キー**                        |
+| `owner_id`    | `uuid`        | 広場の作成者ID | `profiles.id`への外部キー            |
+| `title`       | `text`        | 広場のタイトル  | **必須**                         |
+| `description` | `text`        | 広場の説明    | `NULL`許可                       |
+| `created_at`  | `timestamptz` | 作成日時     | デフォルト `now()`                  |
+| `updated_at`  | `timestamptz` | 更新日時     | デフォルト `now()`, トリガーで自動更新      |
 
 ・hiroba_members テーブル (広場参加メンバー)
 | カラム名        | データ型          | 説明     | 制約 / 備考                        |
 | :---------- | :------------ | :----- | :----------------------------- |
-| `hiroba_id` | `uuid`        | 広場ID   | **複合主キー**, `hirobas.id`への外部キー  |
-| `user_id`   | `uuid`        | ユーザーID | **複合主キー**, `profiles.id`への外部キー |
-| `joined_at` | `timestamptz` | 参加日時   | デフォルト `now()`                  |
+| `hiroba_id`  | `uuid`        | 広場ID     | **複合主キー**, `hirobas.id`への外部キー               |
+| `user_id`    | `uuid`        | ユーザーID   | **複合主キー**, `profiles.id`への外部キー              |
+| `role`       | `text`        | 役割       | `'owner'` / `'member'`, デフォルト `'member'`     |
+| `status`     | `text`        | 招待状態     | `'pending'` / `'approved'` / `'declined'`, デフォルト `'pending'` |
+| `invited_by` | `uuid`        | 招待者ID    | `profiles.id`への外部キー, `NULL`許可               |
+| `created_at` | `timestamptz` | 参加日時     | デフォルト `now()`                                |
 
 ・posts テーブル (投稿)
 | カラム名        | データ型    | 説明         | 制約 / 備考                     |
 | :---------- | :------ | :--------- | :-------------------------- |
-| `id`        | `uuid`  | 投稿ID       | **主キー**                     |
-| `hiroba_id` | `uuid`  | 投稿先の広場ID   | **必須**, `hirobas.id`への外部キー  |
-| `user_id`   | `uuid`  | 投稿者のユーザーID | **必須**, `profiles.id`への外部キー |
-| `image_url` | `text`  | 画像のURL     | **必須**                      |
-| `reactions` | `jsonb` | リアクション情報   | `NULL`許可                    |
+| `id`          | `uuid`        | 投稿ID          | **主キー**                     |
+| `hiroba_id`   | `uuid`        | 投稿先の広場ID      | **必須**, `hirobas.id`への外部キー  |
+| `user_id`     | `uuid`        | 投稿者のユーザーID    | **必須**, `profiles.id`への外部キー |
+| `image_path`  | `text`        | 画像のStorage パス  | **必須**                      |
+| `caption`     | `text`        | キャプション        | `NULL`許可                    |
+| `likes_count` | `integer`     | いいね数           | デフォルト `0`                  |
+| `created_at`  | `timestamptz` | 投稿日時           | デフォルト `now()`               |
 
 ・plans テーブル (AI生成プラン)
 | カラム名           | データ型      | 説明          | 制約 / 備考                    |
 | :------------- | :-------- | :---------- | :------------------------- |
-| `id`           | `uuid`    | プランID       | **主キー**                    |
-| `hiroba_id`    | `uuid`    | 属する広場ID     | **必須**, `hirobas.id`への外部キー |
-| `name`         | `text`    | AIが命名したプラン名 | **必須**                     |
-| `description`  | `text`    | プランの概要説明    | `NULL`許可                   |
-| `content_json` | `jsonb`   | プラン詳細       | **必須**                     |
-| `is_selected`  | `boolean` | 決定プランか否か    | デフォルト `false`              |
+| `id`              | `uuid`        | プランID              | **主キー**                                      |
+| `hiroba_id`       | `uuid`        | 属する広場ID            | **必須**, `hirobas.id`への外部キー                    |
+| `created_by`      | `uuid`        | プラン作成者ID           | **必須**, `profiles.id`への外部キー                   |
+| `name`            | `text`        | AIが命名したプラン名        | **必須**                                        |
+| `summary`         | `text`        | プランの概要説明           | `NULL`許可                                      |
+| `route_json`      | `jsonb`       | ルート詳細              | **必須**, デフォルト `'{}'`                          |
+| `source_post_ids` | `uuid[]`      | 元になった投稿IDの配列       | デフォルト `'{}'`                                  |
+| `status`          | `text`        | プランの状態             | `'draft'` / `'selected'`, デフォルト `'draft'`     |
+| `created_at`      | `timestamptz` | 作成日時               | デフォルト `now()`                                 |
 
 
 
