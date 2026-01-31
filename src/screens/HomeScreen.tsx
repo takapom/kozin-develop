@@ -6,36 +6,27 @@ import {
   SafeAreaView,
   ScrollView,
   Pressable,
+  ActivityIndicator,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { StatusBar } from 'expo-status-bar';
 import { colors, fonts, radii, shadows, spacing } from '../theme/tokens';
-import { AppTabBar } from '../components/ui/AppTabBar';
+import { AppTabBar, TabKey } from '../components/ui/AppTabBar';
+import { useAuth } from '../contexts/AuthContext';
+import { useMyHirobas } from '../hooks/useMyHirobas';
+import { relativeTime } from '../utils/relativeTime';
 
-const hirobas = [
-  {
-    id: 'shibuya',
-    title: 'うんち 🏙️',
-    minutes: '5分前',
-    members: '👩‍🦰👨‍🦱👩‍🦳 3人',
-    posts: '📸 12件',
-    dotColor: '#F9B7C7',
-  },
-  {
-    id: 'gradtrip',
-    title: '卒業旅行✈️',
-    minutes: '2時間前',
-    members: '👩‍🦰👨‍🦱👩 4人',
-    posts: '📸 28件',
-    dotColor: '#B7B9FF',
-  },
-];
+const DOT_COLORS = ['#F9B7C7', '#B7B9FF', '#B7E8D0', '#FFE8B5', '#DDE8FF'];
 
 type HomeScreenProps = {
   onSelectHiroba?: (id: string) => void;
+  onOpenSettings?: () => void;
 };
 
-export function HomeScreen({ onSelectHiroba }: HomeScreenProps) {
+export function HomeScreen({ onSelectHiroba, onOpenSettings }: HomeScreenProps) {
+  const { profile } = useAuth();
+  const { data: hirobas, isLoading } = useMyHirobas();
+
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
@@ -47,7 +38,7 @@ export function HomeScreen({ onSelectHiroba }: HomeScreenProps) {
           <View style={styles.headerRow}>
             <View>
               <Text style={styles.greeting}>おはよう ☀️</Text>
-              <Text style={styles.name}>たかぽん</Text>
+              <Text style={styles.name}>{profile?.username ?? 'ゲスト'}</Text>
             </View>
             <LinearGradient
               colors={[colors.avatarStart, colors.avatarEnd]}
@@ -82,29 +73,63 @@ export function HomeScreen({ onSelectHiroba }: HomeScreenProps) {
             <Text style={styles.sectionLink}>すべて見る</Text>
           </View>
 
-          {hirobas.map((hiroba) => (
-            <Pressable
-              key={hiroba.id}
-              style={styles.hirobaCard}
-              onPress={() => onSelectHiroba?.(hiroba.id)}
-            >
-              <View style={[styles.hirobaDot, { backgroundColor: hiroba.dotColor }]} />
-              <View style={styles.hirobaInfo}>
-                <View style={styles.hirobaHeaderRow}>
-                  <Text style={styles.hirobaTitle}>{hiroba.title}</Text>
-                  <Text style={styles.hirobaTime}>{hiroba.minutes}</Text>
-                </View>
-                <View style={styles.hirobaMetaRow}>
-                  <Text style={styles.hirobaMeta}>{hiroba.members}</Text>
-                  <Text style={styles.hirobaMeta}>{hiroba.posts}</Text>
-                </View>
-              </View>
-            </Pressable>
-          ))}
+          {isLoading ? (
+            <ActivityIndicator
+              size="large"
+              color={colors.accent}
+              style={{ marginTop: spacing.xl }}
+            />
+          ) : !hirobas || hirobas.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>広場がまだありません</Text>
+              <Text style={styles.emptySubtext}>
+                上のボタンから新しい広場をつくりましょう
+              </Text>
+            </View>
+          ) : (
+            hirobas.map((hiroba, index) => {
+              const memberCount = hiroba.hiroba_members?.[0]?.count ?? 0;
+              const postCount = hiroba.posts?.[0]?.count ?? 0;
+              const dotColor = DOT_COLORS[index % DOT_COLORS.length];
+
+              return (
+                <Pressable
+                  key={hiroba.id}
+                  style={styles.hirobaCard}
+                  onPress={() => onSelectHiroba?.(hiroba.id)}
+                >
+                  <View
+                    style={[styles.hirobaDot, { backgroundColor: dotColor }]}
+                  />
+                  <View style={styles.hirobaInfo}>
+                    <View style={styles.hirobaHeaderRow}>
+                      <Text style={styles.hirobaTitle}>{hiroba.title}</Text>
+                      <Text style={styles.hirobaTime}>
+                        {relativeTime(hiroba.updated_at)}
+                      </Text>
+                    </View>
+                    <View style={styles.hirobaMetaRow}>
+                      <Text style={styles.hirobaMeta}>
+                        👥 {memberCount}人
+                      </Text>
+                      <Text style={styles.hirobaMeta}>
+                        📸 {postCount}件
+                      </Text>
+                    </View>
+                  </View>
+                </Pressable>
+              );
+            })
+          )}
         </ScrollView>
       </SafeAreaView>
 
-      <AppTabBar active="home" />
+      <AppTabBar
+        active="home"
+        onTabPress={(tab: TabKey) => {
+          if (tab === 'settings') onOpenSettings?.();
+        }}
+      />
     </View>
   );
 }
@@ -249,5 +274,20 @@ const styles = StyleSheet.create({
     fontSize: 12,
     fontFamily: fonts.body,
     color: colors.textSecondary,
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: spacing.xl,
+  },
+  emptyText: {
+    fontSize: 14,
+    fontFamily: fonts.heading,
+    color: colors.textSecondary,
+  },
+  emptySubtext: {
+    fontSize: 12,
+    fontFamily: fonts.body,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
   },
 });

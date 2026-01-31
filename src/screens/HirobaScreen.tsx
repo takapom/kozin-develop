@@ -2,44 +2,36 @@ import React from 'react';
 import {
   View,
   Text,
+  Image,
   StyleSheet,
   SafeAreaView,
   Pressable,
   ScrollView,
+  ActivityIndicator,
 } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import { colors, fonts, radii, shadows, spacing } from '../theme/tokens';
 import { GradientPillButton } from '../components/button/GradientPillButton';
 import { OutlinePillButton } from '../components/button/OutlinePillButton';
 import { AppTabBar, TabKey } from '../components/ui/AppTabBar';
+import { useHiroba } from '../hooks/useHiroba';
+import { useHirobaPosts } from '../hooks/useHirobaPosts';
+import { useHirobaMembers } from '../hooks/useHirobaMembers';
+import { relativeTime } from '../utils/relativeTime';
+
+const AVATAR_COLORS = ['#FFD6C2', '#FFE8B5', '#FBD6E3', '#DDE8FF', '#B7E8D0'];
 
 type HirobaScreenProps = {
+  hirobaId: string;
   onBack?: () => void;
   onOpenSettings?: () => void;
 };
 
-const posts = [
-  {
-    id: 'ramen',
-    user: 'みさき',
-    time: '5分前',
-    emoji: '🍜',
-    title: '新しいラーメン屋！',
-    likes: 2,
-    tint: '#FDE6DF',
-  },
-  {
-    id: 'sakura',
-    user: 'けんた',
-    time: '12分前',
-    emoji: '🌸',
-    title: '夜桜スポット',
-    likes: 3,
-    tint: '#ECE7FF',
-  },
-];
+export function HirobaScreen({ hirobaId, onBack, onOpenSettings }: HirobaScreenProps) {
+  const { data: hiroba } = useHiroba(hirobaId);
+  const { data: posts, isLoading: postsLoading } = useHirobaPosts(hirobaId);
+  const { data: members } = useHirobaMembers(hirobaId);
 
-export function HirobaScreen({ onBack, onOpenSettings }: HirobaScreenProps) {
   const handleTabPress = (tab: TabKey) => {
     if (tab === 'home') {
       onBack?.();
@@ -58,7 +50,7 @@ export function HirobaScreen({ onBack, onOpenSettings }: HirobaScreenProps) {
           <Pressable style={styles.iconButton} onPress={onBack}>
             <Text style={styles.iconButtonText}>←</Text>
           </Pressable>
-          <Text style={styles.topTitle}>今週末の渋谷🏙️</Text>
+          <Text style={styles.topTitle}>{hiroba?.title ?? '読み込み中...'}</Text>
           <Pressable style={styles.iconButton} onPress={onOpenSettings} hitSlop={8}>
             <Text style={styles.iconButtonText}>•••</Text>
           </Pressable>
@@ -67,48 +59,89 @@ export function HirobaScreen({ onBack, onOpenSettings }: HirobaScreenProps) {
         <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
           <View style={styles.memberCard}>
             <View style={styles.avatarRow}>
-              <View style={[styles.avatarCircle, { backgroundColor: '#FFD6C2' }]}>
-                <Text style={styles.avatarEmoji}>👩</Text>
-              </View>
-              <View style={[styles.avatarCircle, { backgroundColor: '#FFE8B5', marginLeft: -10 }]}>
-                <Text style={styles.avatarEmoji}>👨</Text>
-              </View>
-              <View style={[styles.avatarCircle, { backgroundColor: '#FBD6E3', marginLeft: -10 }]}>
-                <Text style={styles.avatarEmoji}>👧</Text>
-              </View>
+              {(members ?? []).slice(0, 3).map((member, i) => (
+                <View
+                  key={member.user_id}
+                  style={[
+                    styles.avatarCircle,
+                    {
+                      backgroundColor: AVATAR_COLORS[i % AVATAR_COLORS.length],
+                      marginLeft: i > 0 ? -10 : 0,
+                    },
+                  ]}
+                >
+                  <Text style={styles.avatarEmoji}>👤</Text>
+                </View>
+              ))}
             </View>
-            <Text style={styles.memberText}>3人のメンバー</Text>
+            <Text style={styles.memberText}>
+              {members?.length ?? 0}人のメンバー
+            </Text>
             <Pressable style={styles.inviteButton}>
               <Text style={styles.inviteText}>＋ 招待</Text>
             </Pressable>
           </View>
 
-          <View style={styles.grid}>
-            {posts.map((post) => (
-              <View key={post.id} style={styles.postCard}>
-                <View style={styles.postHeader}>
-                  <View style={styles.postUser}>
-                    <View style={styles.postAvatar}>
-                      <Text style={styles.postAvatarEmoji}>👧</Text>
+          {postsLoading ? (
+            <ActivityIndicator
+              size="large"
+              color={colors.accent}
+              style={{ marginTop: spacing.xl }}
+            />
+          ) : !posts || posts.length === 0 ? (
+            <View style={styles.emptyState}>
+              <Text style={styles.emptyText}>まだ投稿がありません</Text>
+              <Text style={styles.emptySubtext}>
+                スクショを投稿してプランを作ろう
+              </Text>
+            </View>
+          ) : (
+            <View style={styles.grid}>
+              {posts.map((post) => {
+                const profile = post.profiles;
+                return (
+                  <View key={post.id} style={styles.postCard}>
+                    <View style={styles.postHeader}>
+                      <View style={styles.postUser}>
+                        <View style={styles.postAvatar}>
+                          <Text style={styles.postAvatarEmoji}>👤</Text>
+                        </View>
+                        <Text style={styles.postName}>
+                          {profile?.username ?? '不明'}
+                        </Text>
+                      </View>
+                      <Text style={styles.postTime}>
+                        {relativeTime(post.created_at)}
+                      </Text>
                     </View>
-                    <Text style={styles.postName}>{post.user}</Text>
+
+                    {post.imageUrl ? (
+                      <Image
+                        source={{ uri: post.imageUrl }}
+                        style={styles.postImage}
+                        resizeMode="cover"
+                      />
+                    ) : (
+                      <View style={[styles.postImage, styles.postImagePlaceholder]}>
+                        <Text style={styles.postEmoji}>📷</Text>
+                      </View>
+                    )}
+
+                    {post.caption ? (
+                      <Text style={styles.postTitle} numberOfLines={2}>
+                        {post.caption}
+                      </Text>
+                    ) : null}
+
+                    <View style={styles.postFooter}>
+                      <Text style={styles.postLike}>👍 {post.likes_count}</Text>
+                      <Text style={styles.postAction}>👍 いいね</Text>
+                    </View>
                   </View>
-                  <Text style={styles.postTime}>{post.time}</Text>
-                </View>
-
-                <View style={[styles.postImage, { backgroundColor: post.tint }]}>
-                  <Text style={styles.postEmoji}>{post.emoji}</Text>
-                </View>
-
-                <Text style={styles.postTitle}>{post.title}</Text>
-
-                <View style={styles.postFooter}>
-                  <Text style={styles.postLike}>👍 {post.likes}</Text>
-                  <Text style={styles.postAction}>👍 いいね</Text>
-                </View>
-              </View>
-            ))}
-          </View>
+                );
+              })}
+            </View>
+          )}
         </ScrollView>
       </SafeAreaView>
 
@@ -214,6 +247,21 @@ const styles = StyleSheet.create({
     fontFamily: fonts.heading,
     color: colors.accent,
   },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: spacing.xl,
+  },
+  emptyText: {
+    fontSize: 14,
+    fontFamily: fonts.heading,
+    color: colors.textSecondary,
+  },
+  emptySubtext: {
+    fontSize: 12,
+    fontFamily: fonts.body,
+    color: colors.textMuted,
+    marginTop: spacing.xs,
+  },
   grid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
@@ -262,9 +310,13 @@ const styles = StyleSheet.create({
   postImage: {
     height: 94,
     borderRadius: radii.card,
+    marginBottom: spacing.sm,
+    overflow: 'hidden',
+  },
+  postImagePlaceholder: {
+    backgroundColor: '#F3F4F8',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: spacing.sm,
   },
   postEmoji: {
     fontSize: 32,
