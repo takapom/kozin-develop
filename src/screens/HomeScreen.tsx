@@ -18,16 +18,10 @@ import { AppTabBar, TabKey } from '../components/ui/AppTabBar';
 import { useAuth } from '../contexts/AuthContext';
 import { useMyHirobas } from '../hooks/useMyHirobas';
 import { relativeTime } from '../utils/relativeTime';
+import { HIROBA_COLORS, HIROBA_ICONS } from '../constants/hirobaTheme';
 
-const DOT_COLORS = ['#F9B7C7', '#B7B9FF', '#B7E8D0', '#FFE8B5', '#DDE8FF'];
-
-const DOT_ICONS: React.ComponentProps<typeof Ionicons>['name'][] = [
-  'compass-outline',
-  'heart-outline',
-  'sparkles',
-  'planet-outline',
-  'rocket-outline',
-];
+const DOT_COLORS = HIROBA_COLORS;
+const DOT_ICONS = HIROBA_ICONS;
 
 /** DOT_COLOR の hex を opacity 0.15 の rgba に変換する */
 function toShadowColor(hex: string): string {
@@ -38,7 +32,7 @@ function toShadowColor(hex: string): string {
 }
 
 type HomeScreenProps = {
-  onSelectHiroba?: (id: string) => void;
+  onSelectHiroba?: (id: string, themeIndex: number) => void;
   onOpenSettings?: () => void;
 };
 
@@ -122,7 +116,7 @@ export function HomeScreen({ onSelectHiroba, onOpenSettings }: HomeScreenProps) 
               return (
                 <Pressable
                   key={hiroba.id}
-                  onPress={() => onSelectHiroba?.(hiroba.id)}
+                  onPress={() => onSelectHiroba?.(hiroba.id, index)}
                   style={({ pressed }) => [
                     styles.cardWrapper,
                     pressed && styles.cardPressed,

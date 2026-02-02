@@ -21,6 +21,7 @@ function Router() {
   const { session, loading } = useAuth();
   const [screen, setScreen] = useState<Screen>("top");
   const [selectedHirobaId, setSelectedHirobaId] = useState<string | null>(null);
+  const [selectedThemeIndex, setSelectedThemeIndex] = useState(0);
 
   // 初回セッション確認中
   if (loading) {
@@ -61,8 +62,9 @@ function Router() {
   if (screen === "home") {
     return (
       <HomeScreen
-        onSelectHiroba={(id: string) => {
+        onSelectHiroba={(id: string, themeIndex: number) => {
           setSelectedHirobaId(id);
+          setSelectedThemeIndex(themeIndex);
           setScreen("hiroba");
         }}
         onOpenSettings={() => setScreen("settings")}
@@ -74,6 +76,7 @@ function Router() {
     return (
       <HirobaScreen
         hirobaId={selectedHirobaId}
+        themeIndex={selectedThemeIndex}
         onBack={() => setScreen("home")}
         onOpenSettings={() => setScreen("hirobaSettings")}
       />
