@@ -20,6 +20,7 @@ import { GlassCard } from '../components/ui/GlassCard';
 import { GradientPillButton } from '../components/button/GradientPillButton';
 import { OutlinePillButton } from '../components/button/OutlinePillButton';
 import { AppTabBar, TabKey } from '../components/ui/AppTabBar';
+import { PostModal } from '../components/feature/PostModal';
 import { useHiroba } from '../hooks/useHiroba';
 import { useHirobaPosts } from '../hooks/useHirobaPosts';
 import { useHirobaMembers } from '../hooks/useHirobaMembers';
@@ -218,6 +219,8 @@ export function HirobaScreen({
   const { data: posts, isLoading: postsLoading } = useHirobaPosts(hirobaId);
   const { data: members } = useHirobaMembers(hirobaId);
 
+  const [postModalVisible, setPostModalVisible] = useState(false);
+
   const theme = getHirobaTheme(themeIndex);
 
   // Masonry用に左右2列に振り分ける
@@ -259,6 +262,13 @@ export function HirobaScreen({
   return (
     <View style={styles.container}>
       <StatusBar style="dark" />
+
+      {/* 投稿モーダル */}
+      <PostModal
+        visible={postModalVisible}
+        hirobaId={hirobaId}
+        onClose={() => setPostModalVisible(false)}
+      />
 
       {/* ── カラーグラデーション背景 ── */}
       <LinearGradient
@@ -380,6 +390,10 @@ export function HirobaScreen({
             height={44}
             paddingHorizontal={10}
             textStyle={styles.actionButtonText}
+            onPress={() => {
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              setPostModalVisible(true);
+            }}
           />
           <OutlinePillButton
             label="プランを作る"
