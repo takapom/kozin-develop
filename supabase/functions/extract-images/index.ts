@@ -1,5 +1,11 @@
-// @ts-ignore: Deno JSR import (available in Supabase Edge Functions)
-import "jsr:@supabase/functions-js/edge-runtime.d.ts";
+// @ts-ignore: Deno実行時は拡張子付きimportが必要（VSCode TS設定の警告を抑制）
+import type { ExtractImagesResponse, ImageCandidate } from "./types.ts";
+// @ts-ignore: Deno実行時は拡張子付きimportが必要（VSCode TS設定の警告を抑制）
+import { tryExtractHotpaper } from "./hotpaper/index.ts";
+// @ts-ignore: Deno実行時は拡張子付きimportが必要（VSCode TS設定の警告を抑制）
+import { tryExtractInstagram } from "./instagram/index.ts";
+// @ts-ignore: Deno実行時は拡張子付きimportが必要（VSCode TS設定の警告を抑制）
+import { tryExtractTabelog } from "./tabelog/index.ts";
 
 // ---------------------------------------------------------------------------
 // CORS helpers
@@ -82,13 +88,6 @@ function isProbablySmallImage(url: string): boolean {
 // ---------------------------------------------------------------------------
 // Regex-based HTML extraction (no DOM parser dependency)
 // ---------------------------------------------------------------------------
-
-interface ImageCandidate {
-  url: string;
-  source: string;
-}
-
-//   Extract content
 function getMetaContent(html: string, pattern: RegExp): string[] {
   const results: string[] = [];
   let match: RegExpExecArray | null;
@@ -188,8 +187,7 @@ function extractDescription(html: string): string {
 // Main handler
 // ---------------------------------------------------------------------------
 
-// @ts-ignore: Deno runtime API (available in Supabase Edge Functions)
-Deno.serve(async (req: Request) => {
+export async function handleRequest(req: Request): Promise<Response> {
   const origin = req.headers.get("origin");
   const corsHeaders = buildCorsHeaders(origin);
 
@@ -228,6 +226,22 @@ Deno.serve(async (req: Request) => {
     } catch {
       return jsonResponse({ error: "Invalid URL" }, 400, corsHeaders);
     }
+
+    // Provider-specific extraction (hotpaper / instagram / tabelog)
+    // HotPepper等の「公式API」経由で取れる場合はここで返す。
+    // 失敗しても全体を落とさず、汎用HTML抽出へフォールバックする。
+    let providerResult: ExtractImagesResponse | null = null;
+    try {
+      providerResult =
+        (await tryExtractInstagram(parsedUrl)) ??
+        (await tryExtractTabelog(parsedUrl)) ??
+        (await tryExtractHotpaper(parsedUrl));
+    } catch (e) {
+      console.warn("provider extract failed, fallback to generic:", e);
+      providerResult = null;
+    }
+
+    if (providerResult) return jsonResponse(providerResult, 200, corsHeaders);
 
     // Fetch the page HTML with a browser-like User-Agent
     const response = await fetch(parsedUrl.href, {
@@ -276,4 +290,13 @@ Deno.serve(async (req: Request) => {
       corsHeaders
     );
   }
-});
+}
+
+// Supabase Edge Functions entrypoint
+// @ts-ignore: Deno runtime API (available in Supabase Edge Functions)
+if (import.meta.main) {
+  // @ts-ignore: Deno JSR import (available in Supabase Edge Functions)
+  await import("jsr:@supabase/functions-js/edge-runtime.d.ts");
+  // @ts-ignore: Deno runtime API (available in Supabase Edge Functions)
+  Deno.serve(handleRequest);
+}
