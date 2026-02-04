@@ -341,7 +341,7 @@ export function HirobaScreen({
               <View style={styles.emptyIconWrap}>
                 <Ionicons name="camera-outline" size={48} color={theme.color} />
               </View>
-              <Text style={styles.emptyTitle}>スクショを投げ込もう！</Text>
+              <Text style={styles.emptyTitle}>行きたい場所を投げまくろう！！</Text>
               <Text style={styles.emptyDescription}>
                 気になった場所やお店の画像を共有して{'\n'}みんなでプランを作ろう
               </Text>
