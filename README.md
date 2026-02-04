@@ -142,7 +142,96 @@ app/
 
 ---
 
-## 4. 開発ロードマップ（優先順位）
+## 4. 環境構築
+
+### 4.1. 前提条件
+
+- Node.js 18以上
+- npm または yarn
+- Expo CLI (`npm install -g expo-cli`)
+- Supabase CLI (`brew install supabase/tap/supabase`)
+
+### 4.2. インストール
+
+```bash
+# リポジトリをクローン
+git clone <repository-url>
+cd kozin-develop
+
+# 依存パッケージをインストール
+npm install
+```
+
+### 4.3. 環境変数の設定
+
+#### クライアント側（Expo / React Native）
+
+`.env` ファイルをプロジェクトルートに作成：
+
+```bash
+cp .env.example .env
+```
+
+`.env` の内容：
+```
+EXPO_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+EXPO_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+```
+
+#### サーバー側（Supabase Edge Functions）
+
+Edge Functionsで使用する環境変数は **Supabase Secrets** に設定が必要です。
+ローカルの `.env` ファイルはEdge Functionsには適用されません。
+
+```bash
+# Supabaseにログイン
+supabase login
+
+# プロジェクトをリンク
+supabase link --project-ref <your-project-ref>
+
+# Secretsを設定
+supabase secrets set HOTPEPPER_API_KEY=your-api-key
+
+# 設定済みのSecretsを確認
+supabase secrets list
+```
+
+| 環境変数 | 用途 | 設定先 |
+|---|---|---|
+| `EXPO_PUBLIC_SUPABASE_URL` | SupabaseのURL | `.env` |
+| `EXPO_PUBLIC_SUPABASE_ANON_KEY` | Supabaseの匿名キー | `.env` |
+| `HOTPEPPER_API_KEY` | Hotpepper API | `supabase secrets` |
+
+### 4.4. Edge Functionsのデプロイ
+
+```bash
+# extract-images関数をデプロイ
+supabase functions deploy extract-images --no-verify-jwt
+
+# create-post関数をデプロイ
+supabase functions deploy create-post --no-verify-jwt
+```
+
+### 4.5. アプリの起動
+
+```bash
+# 開発サーバーを起動
+npx expo start
+
+# iOSシミュレータで起動
+npx expo start --ios
+
+# Androidエミュレータで起動
+npx expo start --android
+
+# Webブラウザで起動
+npx expo start --web
+```
+
+---
+
+## 5. 開発ロードマップ（優先順位）
 
 ### Phase 1 (MVP)
 
@@ -163,7 +252,7 @@ app/
 - プラン選択・共有機能の実装
 - UI/UXの全体的なブラッシュアップ
 
-## 5. デザイン案
+## 6. デザイン案
 ### html参照(URLに入力で参照可能)：
 file:///Users/takagiyuuki/Downloads/Planlike%20Figma%20Export.html
 
