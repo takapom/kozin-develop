@@ -88,6 +88,10 @@ function Router() {
       <HirobaSettingsScreen
         hirobaId={selectedHirobaId}
         onBack={() => setScreen("hiroba")}
+        onDeleted={() => {
+          setSelectedHirobaId(null);
+          setScreen("home");
+        }}
       />
     );
   }

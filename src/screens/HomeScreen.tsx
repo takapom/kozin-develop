@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   View,
   Text,
@@ -7,18 +7,22 @@ import {
   ScrollView,
   Pressable,
   ActivityIndicator,
+  Alert,
 } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
 import { StatusBar } from 'expo-status-bar';
+import * as Haptics from 'expo-haptics';
 import { colors, fonts, radii, shadows, spacing } from '../theme/tokens';
 import { glass } from '../theme/glass';
 import { GlassCard } from '../components/ui/GlassCard';
 import { AppTabBar, TabKey } from '../components/ui/AppTabBar';
 import { useAuth } from '../contexts/AuthContext';
 import { useMyHirobas } from '../hooks/useMyHirobas';
+import { useDeleteHiroba } from '../hooks/useDeleteHiroba';
 import { relativeTime } from '../utils/relativeTime';
 import { HIROBA_COLORS, HIROBA_ICONS } from '../constants/hirobaTheme';
+import { CreateHirobaModal } from '../components/feature/CreateHirobaModal';
 
 const DOT_COLORS = HIROBA_COLORS;
 const DOT_ICONS = HIROBA_ICONS;
@@ -36,9 +40,34 @@ type HomeScreenProps = {
   onOpenSettings?: () => void;
 };
 
-export function HomeScreen({ onSelectHiroba, onOpenSettings }: HomeScreenProps) {
+export function HomeScreen({
+  onSelectHiroba,
+  onOpenSettings,
+}: HomeScreenProps) {
   const { profile } = useAuth();
   const { data: hirobas, isLoading } = useMyHirobas();
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const deleteMutation = useDeleteHiroba();
+
+  const handleDeleteHiroba = (hirobaId: string, title: string) => {
+    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
+    Alert.alert(title, 'この広場を削除しますか？', [
+      { text: 'キャンセル', style: 'cancel' },
+      {
+        text: '削除',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteMutation.mutateAsync(hirobaId);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+          } catch (err) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+            Alert.alert('エラー', '削除に失敗しました。もう一度お試しください。');
+          }
+        },
+      },
+    ]);
+  };
 
   return (
     <View style={styles.container}>
@@ -63,7 +92,10 @@ export function HomeScreen({ onSelectHiroba, onOpenSettings }: HomeScreenProps) 
             </LinearGradient>
           </View>
 
-          <Pressable style={styles.ctaCard}>
+          <Pressable
+            style={styles.ctaCard}
+            onPress={() => setShowCreateModal(true)}
+          >
             <LinearGradient
               colors={[colors.coolStart, colors.coolEnd]}
               start={{ x: 0, y: 0 }}
@@ -117,6 +149,8 @@ export function HomeScreen({ onSelectHiroba, onOpenSettings }: HomeScreenProps) 
                 <Pressable
                   key={hiroba.id}
                   onPress={() => onSelectHiroba?.(hiroba.id, index)}
+                  onLongPress={() => handleDeleteHiroba(hiroba.id, hiroba.title)}
+                  delayLongPress={500}
                   style={({ pressed }) => [
                     styles.cardWrapper,
                     pressed && styles.cardPressed,
@@ -206,6 +240,15 @@ export function HomeScreen({ onSelectHiroba, onOpenSettings }: HomeScreenProps) 
         active="home"
         onTabPress={(tab: TabKey) => {
           if (tab === 'settings') onOpenSettings?.();
+        }}
+      />
+
+      <CreateHirobaModal
+        visible={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onCreated={(hirobaId) => {
+          // 作成後に新しい広場へ遷移
+          onSelectHiroba?.(hirobaId, 0);
         }}
       />
     </View>
