@@ -305,32 +305,59 @@ create policy "plans: 作成者または owner が更新"
 -- =============================================================
 -- Storage: post-images バケット
 -- =============================================================
-insert into storage.buckets (id, name, public)
-values ('post-images', 'post-images', false);
+do $$
+begin
+  -- ローカル `supabase start` の初回起動直後は Storage のDBマイグレーションがまだ走っておらず、
+  -- `storage.*` が存在しないタイミングがあるため、存在チェックしてスキップする。
+  if to_regclass('storage.buckets') is null or to_regclass('storage.objects') is null then
+    raise notice 'storage schema is not ready yet; skip bucket/policies in this migration';
+    return;
+  end if;
 
--- Storage ポリシー: approved メンバーのみ read/write
--- パス規約: hirobas/{hiroba_id}/{user_id}/{filename}
-create policy "storage: メンバーのみ閲覧"
-  on storage.objects for select
-  to authenticated
-  using (
-    bucket_id = 'post-images'
-    and public.is_hiroba_member((storage.foldername(name))[2]::uuid)
-  );
+  insert into storage.buckets (id, name, public)
+  values ('post-images', 'post-images', false)
+  on conflict (id) do nothing;
 
-create policy "storage: メンバーのみアップロード"
-  on storage.objects for insert
-  to authenticated
-  with check (
-    bucket_id = 'post-images'
-    and public.is_hiroba_member((storage.foldername(name))[2]::uuid)
-    and (storage.foldername(name))[3]::uuid = auth.uid()
-  );
+  -- Storage ポリシー: approved メンバーのみ read/write
+  -- パス規約: hirobas/{hiroba_id}/{user_id}/{filename}
+  execute $sql$
+    drop policy if exists "storage: メンバーのみ閲覧" on storage.objects;
+  $sql$;
+  execute $sql$
+    create policy "storage: メンバーのみ閲覧"
+      on storage.objects for select
+      to authenticated
+      using (
+        bucket_id = 'post-images'
+        and public.is_hiroba_member((storage.foldername(name))[2]::uuid)
+      );
+  $sql$;
 
-create policy "storage: 本人のみ削除"
-  on storage.objects for delete
-  to authenticated
-  using (
-    bucket_id = 'post-images'
-    and (storage.foldername(name))[3]::uuid = auth.uid()
-  );
+  execute $sql$
+    drop policy if exists "storage: メンバーのみアップロード" on storage.objects;
+  $sql$;
+  execute $sql$
+    create policy "storage: メンバーのみアップロード"
+      on storage.objects for insert
+      to authenticated
+      with check (
+        bucket_id = 'post-images'
+        and public.is_hiroba_member((storage.foldername(name))[2]::uuid)
+        and (storage.foldername(name))[3]::uuid = auth.uid()
+      );
+  $sql$;
+
+  execute $sql$
+    drop policy if exists "storage: 本人のみ削除" on storage.objects;
+  $sql$;
+  execute $sql$
+    create policy "storage: 本人のみ削除"
+      on storage.objects for delete
+      to authenticated
+      using (
+        bucket_id = 'post-images'
+        and (storage.foldername(name))[3]::uuid = auth.uid()
+      );
+  $sql$;
+end
+$$;
