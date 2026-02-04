@@ -23,6 +23,7 @@ import { GlassCard } from '../components/ui/GlassCard';
 import { GlassNavBar } from '../components/ui/GlassNavBar';
 import { useHiroba } from '../hooks/useHiroba';
 import { useHirobaMembers } from '../hooks/useHirobaMembers';
+import { useDeleteHiroba } from '../hooks/useDeleteHiroba';
 import { useAuth } from '../contexts/AuthContext';
 
 const MEMBER_COLORS = ['#FBD6E3', '#FFE8B5', '#DDE8FF', '#B7E8D0', '#FFD6C2'];
@@ -119,12 +120,14 @@ function PressableScale({
 type HirobaSettingsScreenProps = {
   hirobaId?: string;
   onBack?: () => void;
+  onDeleted?: () => void;
 };
 
-export function HirobaSettingsScreen({ hirobaId, onBack }: HirobaSettingsScreenProps) {
+export function HirobaSettingsScreen({ hirobaId, onBack, onDeleted }: HirobaSettingsScreenProps) {
   const { signOut } = useAuth();
   const { data: hiroba, isLoading: hirobaLoading } = useHiroba(hirobaId ?? '');
   const { data: members, isLoading: membersLoading } = useHirobaMembers(hirobaId ?? '');
+  const deleteMutation = useDeleteHiroba();
 
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
@@ -147,12 +150,26 @@ export function HirobaSettingsScreen({ hirobaId, onBack }: HirobaSettingsScreenP
   );
 
   const handleDelete = useCallback(() => {
+    if (!hirobaId) return;
     Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Heavy);
     Alert.alert('広場を削除', 'この操作は取り消せません。本当に削除しますか？', [
       { text: 'キャンセル', style: 'cancel' },
-      { text: '削除する', style: 'destructive', onPress: () => {} },
+      {
+        text: '削除する',
+        style: 'destructive',
+        onPress: async () => {
+          try {
+            await deleteMutation.mutateAsync(hirobaId);
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
+            onDeleted?.();
+          } catch (err) {
+            Haptics.notificationAsync(Haptics.NotificationFeedbackType.Error);
+            Alert.alert('エラー', '削除に失敗しました。もう一度お試しください。');
+          }
+        },
+      },
     ]);
-  }, []);
+  }, [hirobaId, deleteMutation, onDeleted]);
 
   const handleLogout = useCallback(() => {
     Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning);
